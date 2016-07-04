@@ -162,8 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "ID : " + idx , Toast.LENGTH_SHORT).show();
                 }
             });
-        } else
-            return;
+        }
     }
 
 
