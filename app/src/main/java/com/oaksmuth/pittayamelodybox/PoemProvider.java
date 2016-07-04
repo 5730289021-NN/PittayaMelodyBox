@@ -15,15 +15,16 @@ public class PoemProvider {
     public PoemProvider(Context context) throws IOException {
         Scanner in;
         AssetManager am = context.getAssets();
-        InputStream inputStream = am.open("poem.dat");
-        in = new Scanner(inputStream).useDelimiter(",|\\n");
+        InputStream inputStream = am.open("Melody.dat");
+        in = new Scanner(inputStream,"utf-8").useDelimiter("\\t|\\n");
         for (int i = 0; i < 2000; i++) {
-            String[] tempStringlist = new String[6];
+            String[] tempStringList = new String[7];
             for(int j = 0; j < 6; j++)
             {
-                tempStringlist[j] = in.next().trim();
+                tempStringList[j] = in.next().trim();
             }
-            poems.add(new Poem(tempStringlist));
+            String eng = in.next().trim();
+            poems.add(new Poem(tempStringList,eng));
         }
         in.close();
         inputStream.close();

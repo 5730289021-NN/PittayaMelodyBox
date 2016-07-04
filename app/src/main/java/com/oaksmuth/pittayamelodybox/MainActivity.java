@@ -1,7 +1,7 @@
 package com.oaksmuth.pittayamelodybox;
     /*
     * Connect this to Arduino ... is a smart way to rotate motor
-    * Don't Forget to Add English to the Application
+    *
     */
 
 import android.media.MediaPlayer;
@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 longRunPlay = false;
                 speak(position);
             }
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     poemText.setText(data.poems.get(idx).enteredString());
-                    Toast.makeText(getApplicationContext(), "ID : " + idx, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "ID : " + idx , Toast.LENGTH_SHORT).show();
                 }
             });
         } else
