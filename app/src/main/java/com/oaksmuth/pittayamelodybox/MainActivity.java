@@ -19,11 +19,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private TextToSpeech tts;
+    private TextToSpeech ttsThai;
+    //private TextToSpeech ttsEnglish;
     private PoemProvider data;
     private TextView poemText;
     private Button randButton;
@@ -32,17 +32,17 @@ public class MainActivity extends AppCompatActivity {
     private Menu menu;
     private MediaPlayer mPlayer;
     private int playing;
-    private int time;
+    private short languageState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
         mPlayer = MediaPlayer.create(this, R.raw.kisstherain);
         playing = R.raw.kisstherain;
-        final EditText searchTxt = (EditText) findViewById(R.id.searchTxt);
+        final EditText searchTxt = (EditText) findViewById(R.id.playEditText);
         poemText = (TextView) findViewById(R.id.poemText);
-        Button searchButton = (Button) findViewById(R.id.searchBtn);
+        Button searchButton = (Button) findViewById(R.id.playButton);
         data = Splash.data;
         mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -50,13 +50,14 @@ public class MainActivity extends AppCompatActivity {
                 mPlayer.start();
             }
         });
+        languageState = 0;
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         mPlayer.start();
                         }
 
-                    if (longRunPlay && !tts.isSpeaking()) {
+                    if (longRunPlay && !(ttsThai.isSpeaking()/* || ttsEnglish.isSpeaking()*/)) {
                         int pos = (int) (Math.random() * 2000);
                         speak(pos);
                     }
@@ -105,14 +106,16 @@ public class MainActivity extends AppCompatActivity {
                 longRunPlay = false;
             }
         });
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+
+        ttsThai = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.ENGLISH);
-                tts.speak("Hello สวัสดี", TextToSpeech.QUEUE_FLUSH, null);
+                ttsThai.setLanguage(new Locale("th"));
+                ttsThai.speak("Hello สวัสดี", TextToSpeech.QUEUE_FLUSH, null);
             }
-        });
-        ListView listView = (ListView) findViewById(R.id.PoemlistView);
+        },"com.vajatts.nok");
+
+        ListView listView = (ListView) findViewById(R.id.poemListView);
         ArrayAdapter<Poem> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data.poems);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -145,21 +148,39 @@ public class MainActivity extends AppCompatActivity {
                 else
                     mPlayer.start();
                 return true;
+            case R.id.action_language:
+                languageState++;
+                if(languageState == 3) languageState = 0;
+                if(languageState == 0)
+                    menu.findItem(R.id.action_language).setTitle("Language : Thai|English");
+                else if(languageState == 1)
+                    menu.findItem(R.id.action_language).setTitle("Language : Thai");
+                else if(languageState == 2)
+                    menu.findItem(R.id.action_language).setTitle("Language : English");
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void speak(int id) {
+    private void speak(final int id) {
         if (id >= 0 && id <= 1999) {
-            synchronized (tts) {
-                tts.speak(data.poems.get(id).toString(), TextToSpeech.QUEUE_FLUSH, null);
+            String toSpeak = "";
+            switch (languageState){
+                case 0:
+                    toSpeak = data.poems.get(id).AllString();
+                    break;
+                case 1:
+                    toSpeak = data.poems.get(id).toString();
+                    break;
+                case 2:
+                    toSpeak = data.poems.get(id).EnglishString();
+                    break;
             }
-            final int idx = id;
+            ttsThai.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    poemText.setText(data.poems.get(idx).enteredString());
-                    Toast.makeText(getApplicationContext(), "ID : " + idx , Toast.LENGTH_SHORT).show();
+                    poemText.setText(data.poems.get(id).enteredString());
+                    Toast.makeText(getApplicationContext(), "ID : " + id, Toast.LENGTH_SHORT).show();
                 }
             });
         }
