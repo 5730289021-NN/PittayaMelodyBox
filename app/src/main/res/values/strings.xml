@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">Pittaya Melody Box</string>
+    <string name="app_name">Melody Box</string>
+    <string name="app_label">A Melody Box on Advanced English through the Words of Wisdom</string>
     <string name="action_settings">Settings</string>
 </resources>
