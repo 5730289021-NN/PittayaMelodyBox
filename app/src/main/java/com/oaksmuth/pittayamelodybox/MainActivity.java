@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        mPlayer = MediaPlayer.create(this, R.raw.canon);
-        playing = R.raw.canon;
+        mPlayer = MediaPlayer.create(this, R.raw.canonind);
+        playing = R.raw.canonind;
         final EditText searchTxt = (EditText) findViewById(R.id.playEditText);
         poemText = (TextView) findViewById(R.id.poemText);
         Button searchButton = (Button) findViewById(R.id.playButton);
@@ -63,13 +63,22 @@ public class MainActivity extends AppCompatActivity {
                             mPlayer.reset();
                             mPlayer.release();
                             mPlayer = null; //with release() and = null mPlayer will be nullified
-                        if (playing == R.raw.canon) {
+                        if (playing == R.raw.canonind) {
+                            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alwayswithme);
+                            playing = R.raw.alwayswithme;
+                        } else if (playing == R.raw.alwayswithme) {
+                            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.kisstherain);
+                            playing = R.raw.kisstherain;
+                            } else if (playing == R.raw.kisstherain) {
+                            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.myheartwillgoon);
+                            playing = R.raw.myheartwillgoon;
+                        } else if (playing == R.raw.myheartwillgoon) {
                             mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.peergyntsuite);
                             playing = R.raw.peergyntsuite;
                         } else if (playing == R.raw.peergyntsuite) {
-                            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.canon);
-                            playing = R.raw.canon;
-                            }
+                            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.canonind);
+                            playing = R.raw.canonind;
+                        }
                         mPlayer.start();
                         }
 
