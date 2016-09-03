@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.oaksmuth.pittayamelodybox.MainActivity">
     <item
-        android:id="@+id/action_longrunplay"
+        android:id="@+id/action_longRunPlay"
         android:orderInCategory="100"
         android:title="Long Run Play : Off"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_musicstate"
+        android:id="@+id/action_musicState"
         android:orderInCategory="100"
         android:title="Music : Off"
         app:showAsAction="never" />

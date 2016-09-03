@@ -25,12 +25,13 @@ public class MainActivity extends AppCompatActivity {
     private PoemProvider data;
     private TextView poemText;
     private Button randButton;
-    private boolean longRunPlay = false;
+    private short longRunPlay = 0; //0 : off, 1 : respectively, 2 : randomly
     private boolean musicState = true;
     private Menu menu;
     private MediaPlayer mPlayer;
     private int playing;
     private short languageState;
+    private int poemAt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +82,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mPlayer.start();
                         }
-
-                    if (longRunPlay && !(ttsThai.isSpeaking()/* || ttsEnglish.isSpeaking()*/)) {
-                        int pos = (int) (Math.random() * 2000);
-                        speak(pos);
+                    if (!ttsThai.isSpeaking()) {
+                        switch (longRunPlay) {
+                            case 1: //Respectively
+                            {
+                                speak(++poemAt);
+                            }
+                            case 2: //Randomly
+                            {
+                                int pos = (int) (Math.random() * 2000);
+                                speak(pos);
+                            }
+                        }
                     }
                 }
             }
@@ -95,7 +104,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     int id = Integer.parseInt(searchTxt.getText().toString().trim());
                     speak(id);
-                    longRunPlay = false;
+                    /*
+                        longRunPlay = 0;
+                        menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Off");
+                    */
                 } catch (NumberFormatException e) {
                     Toast.makeText(getApplicationContext(), "Please insert a valid number " + searchTxt.getText().toString(), Toast.LENGTH_LONG).show();
                 }
@@ -107,7 +119,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int pos = (int) (Math.random() * 2000);
                 speak(pos);
-                longRunPlay = false;
+                /*
+                    longRunPlay = 0;
+                    menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Off");
+                */
             }
         });
 
@@ -125,7 +140,10 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                longRunPlay = false;
+                /*
+                    longRunPlay = 0;
+                    menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Off");
+                */
                 speak(position);
             }
         });
@@ -134,19 +152,27 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
-        menu.findItem(R.id.action_musicstate).setTitle("Music : On");
+        menu.findItem(R.id.action_musicState).setTitle("Music : On");
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_longrunplay:
-                longRunPlay = !longRunPlay;
-                menu.findItem(R.id.action_longrunplay).setTitle("Long Run Play : " + (longRunPlay ? "On" : "Off"));
+            case R.id.action_longRunPlay:
+                longRunPlay++;
+                if (longRunPlay == 1) {
+                    menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Respectively");
+                } else if (longRunPlay == 2) {
+                    menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Randomly");
+                } else//longRunPlay = 3 or unknown case
+                {
+                    longRunPlay = 0;
+                    menu.findItem(R.id.action_longRunPlay).setTitle("Long Run Play : Off");
+                }
                 return true;
-            case R.id.action_musicstate:
+            case R.id.action_musicState:
                 musicState = !musicState;
-                menu.findItem(R.id.action_musicstate).setTitle("Music : " + (musicState ? "On" : "Off"));
+                menu.findItem(R.id.action_musicState).setTitle("Music : " + (musicState ? "On" : "Off"));
                 if (!musicState)
                     mPlayer.pause();
                 else
@@ -185,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     poemText.setText(data.poems.get(id).enteredString());
                     Toast.makeText(getApplicationContext(), "ID : " + id, Toast.LENGTH_SHORT).show();
+                    poemAt = id;
                 }
             });
         }
