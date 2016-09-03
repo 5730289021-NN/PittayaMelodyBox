@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer mPlayer;
     private int playing;
     private short languageState;
-    private int poemAt;
+    private int poemAt = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +87,15 @@ public class MainActivity extends AppCompatActivity {
                             case 1: //Respectively
                             {
                                 speak(++poemAt);
+                                //Toast.makeText(MainActivity.this, "Respect", Toast.LENGTH_SHORT).show();
+                                break;
                             }
                             case 2: //Randomly
                             {
                                 int pos = (int) (Math.random() * 2000);
+                                //Toast.makeText(MainActivity.this, "Random", Toast.LENGTH_SHORT).show();
                                 speak(pos);
+                                break;
                             }
                         }
                     }
@@ -132,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 ttsThai.setLanguage(new Locale("th"));
                 ttsThai.speak("Hello สวัสดี", TextToSpeech.QUEUE_FLUSH, null);
             }
-        },"com.vajatts.nok");
+        }/*,"com.vajatts.nok"*/);
 
         ListView listView = (ListView) findViewById(R.id.poemListView);
         ArrayAdapter<Poem> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data.poems);
@@ -206,12 +210,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             ttsThai.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            synchronized (ttsThai) {
+                poemAt = id;
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     poemText.setText(data.poems.get(id).enteredString());
                     Toast.makeText(getApplicationContext(), "ID : " + id, Toast.LENGTH_SHORT).show();
-                    poemAt = id;
                 }
             });
         }
@@ -221,6 +227,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        ttsThai.stop();
+        ttsThai.shutdown();
+        ttsThai = null;
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 }
